@@ -1,0 +1,394 @@
+
+제5장. 연습문제 해답(155-156페이지). 총20문항
+
+1. 문제) EMP Table에서 이름, 급여, 커미션 금액, 총액(sal + comm)을  구하여 총액이 많은 순서로 출력하라. 단, 커미션이 NULL인 사람은 제외한다.
+
+   해답)  select ename,sal,comm,round(sal+comm) as 총액 from emp where comm is not null order by 총액 desc; 
+
+
+
+2. 문제) 10번 부서의 모든 사람들이게 급여의 13%를 보너스로 지불하기로 하였다. 이름, 급여, 보너스 금액, 부서번호를 출력하라.
+
+   해답)  select ename,sal,round(sal*0.13) as bonus ,deptno from emp where deptno = 10;
+
+
+
+3. 문제) 30번 부서의 연봉(sal × 12)을 계산하여 이름, 부서번호, 급여, 연봉을 출력하라. 단, 연말에 급여의 150%를 보너스로 지급한다.
+
+   해답)  select ename,deptno,sal,round(sal*12 + sal*1.5) as 연봉 from emp where deptno = 30;
+
+
+
+4. 문제) 부서번호가 20인 부서의 시간당 임금을 계산하여 출력하라. 단, 1달의 근무일수는 12일이고, 1일 근무시간은 5시간이다. 출력양식은 이름, 급여, 시간당 임금(소수이하 첫 번째 자리에서 반올림)을 출력하라
+
+   해답) select ename,sal,round(sal/60,1) as 시간당임금 from emp where deptno=20;
+
+5. 문제) 급여가 $1,500부터 $3,000 사이의 사람은 급여의 15%를 회비로 지불하기로 하였다. 이를 이름, 급여, 회비(소수점 두 자리에서 반올림)를 출력하라.
+
+   해답)  select ename,sal,round(sal*0.15,2) as 회비 from emp where sal >=1500 and sal <= 3000;
+
+
+
+6. 문제) 급여가 $2,000 이상인 모든 사람은 급여의 15%를 경조비로 내기로 하였다. 이름, 급여, 경조비(소수점 이하 절삭)를 출력하라.
+
+   해답)  select ename,sal,round(sal*0.15) as 경조비 from emp where sal >= 2000;
+
+
+
+7. 문제) 입사일부터 지금까지의 날짜수를 출력하라. 부서번호, 이름, 입사일, 현재일, 근무일수(소수점 이하 절삭), 근무년수, 근무월수(30일 기준), 근무주수를 출력하라.
+
+   해답) SELECT 
+    deptno, 
+    ename, 
+    hiredate, 
+    SYSDATE AS 현재일, 
+    TRUNC(SYSDATE - hiredate) AS 근무일수, 
+    TRUNC(MONTHS_BETWEEN(SYSDATE, hiredate) / 12) AS 근무년수, 
+    TRUNC(MONTHS_BETWEEN(SYSDATE, hiredate)) AS 근무월수, 
+    TRUNC((SYSDATE - hiredate) / 7) AS 근무주수
+FROM emp;
+
+
+
+
+8. 문제) 모든 사원의 실수령액을 계산하여 출력하라. 단, 급여가 많은 순으로 이름, 급여, 실수령액을 출력하라.(실수령액은 금여에 대해 10%의 세금을 뺀 금액)
+
+   해답) select ename,sal, round(sal-sal*0.1) as 실수령액 from emp order by sal desc;
+
+
+
+9. 문제) 성명, 입사일자, 입사일로부터 90일 후의 날짜, 급여를 출력하라.
+
+   해답) 
+SELECT 
+    ename, 
+    hiredate, 
+    hiredate + 90 AS 입사일로부터_90일_후, 
+    sal 
+FROM emp;
+
+
+10. 문제) 사원번호, 성명, 일사일자, 입사일로부터 6개월이 지난 후의 입사일, 6개월 후의 날짜, 급여를 출력하라
+
+    해답) SELECT 
+    empno, 
+    ename, 
+    hiredate, 
+    ADD_MONTHS(hiredate, 6) AS 입사일로부터_6개월_후, 
+    sal 
+FROM emp;
+
+
+
+
+
+11. 문제) 입사한 달의 근무일수를 계산하여 부서번호, 이름, 근무일수를 출력하라.
+
+    해답)SELECT 
+    deptno, 
+    ename, 
+    TRUNC(LAST_DAY(hiredate) - hiredate) + 1 AS 근무일수 
+FROM emp;
+
+
+
+
+
+12. 문제) 모든 사원의 60일이 지난 후의 ‘MONDAY’는 몇 년, 몇 월, 몇 일 인가를 구하여 이름, 입사일, 60일이 지난 후의 ’MONDAY’를 출력하라
+
+    해답)  SELECT 
+    ename, 
+    hiredate, 
+    NEXT_DAY(hiredate + 60, 'MONDAY') AS 60일_후_MONDAY 
+FROM emp;
+
+
+
+
+
+13. 문제) 입사일로부터 오늘까지의 일수를 구하여 이름, 입사일, 근무일수를 출력하라.
+
+    해답)  SELECT 
+    ename, 
+    hiredate, 
+    TRUNC(SYSDATE - hiredate) AS 근무일수 
+FROM emp;
+
+
+
+
+14. 문제) 입사일을 ‘1996년 5월 14일’의 형태로 이름, 입사일을 출력하라.
+
+    해답) 
+SELECT 
+    ename, 
+    TO_CHAR(hiredate, 'YYYY"년 "MM"월 "DD"일"') AS 입사일 
+FROM emp;
+
+
+
+
+15. 문제) 이름의 글자수가 6자 이상인 사람의 이름을 앞에서 3자만 구하여 소문자로 이름만을 출력하라.
+
+    해답 ) SELECT 
+    LOWER(SUBSTR(ename, 1, 3)) AS 이름 
+FROM emp 
+WHERE LENGTH(ename) >= 6;
+
+
+
+
+
+16. 문제) 10번 부서 월급의 평균, 최고, 최저, 인원수를 구하여 출력하라.
+
+    해답)  SELECT 
+    deptno, 
+    AVG(sal) AS 평균월급, 
+    MAX(sal) AS 최고월급, 
+    MIN(sal) AS 최저월급, 
+    COUNT(*) AS 인원수 
+FROM emp 
+WHERE deptno = 10 
+GROUP BY deptno;
+
+
+
+
+17. 문제) 각 부서별 급여의 평균, 최고, 최저, 인원수를 구하여 출력하라.
+
+    해답) SELECT 
+    deptno, 
+    AVG(sal) AS 평균월급, 
+    MAX(sal) AS 최고월급, 
+    MIN(sal) AS 최저월급, 
+    COUNT(*) AS 인원수 
+FROM emp 
+GROUP BY deptno;
+
+
+
+
+18. 문제) 각 부서별 같은 업무를 하는 사람의 인원수를 구하여 부서번호, 업무명, 인원수를 출력하라.
+
+    해답) 
+SELECT 
+    deptno, 
+    job, 
+    COUNT(*) AS 인원수 
+FROM emp 
+GROUP BY deptno, job;
+
+
+
+19. 문제) 같은 업무를 하는 사람의 수가 4명 이상인 업무와 인원수를 출력하라.
+  
+    해답)
+SELECT 
+    job, 
+    COUNT(*) AS 인원수 
+FROM emp 
+GROUP BY job 
+HAVING COUNT(*) >= 4;
+
+20. 문제) 각 부서별 평균 월급, 전체 월급, 최고 월급, 최저 월급을 구하여 평균 월급이 많은 순으로 출력하라.
+
+    해답)  
+SELECT 
+    deptno, 
+    AVG(sal) AS 평균월급, 
+    SUM(sal) AS 전체월급, 
+    MAX(sal) AS 최고월급, 
+    MIN(sal) AS 최저월급 
+FROM emp 
+GROUP BY deptno 
+ORDER BY AVG(sal) DESC;
+
+
+
+
+
+제6장. 연습문제 해답(220-221페이지). 총13문항
+
+1. 문제) EMP와 DEPT Table을 JOIN하여 부서번호, 부서명, 이름, 급여를 출력하라.
+
+   해답)  SELECT 
+    d.deptno, 
+    d.dname, 
+    e.ename, 
+    e.sal 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno;
+
+
+
+
+2. 문제) 이름이 ‘ALLEN’인 사원의 부서명을 출력하라.
+
+   해답)  SELECT 
+    d.dname 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.ename = 'ALLEN';
+
+
+
+
+3. 문제) EMP Table의 데이터를 출력하되 해당사원에 대한 상관번호와 상관의 성명을 함께 출력하라.
+
+   해답)  SELECT 
+    e1.empno, 
+    e1.ename, 
+    e1.mgr AS 상관번호, 
+    e2.ename AS 상관성명 
+FROM emp e1 
+LEFT JOIN emp e2 ON e1.mgr = e2.empno;
+
+
+
+
+
+4. 문제) DEPT Table에는 존재하는 부서코드이지만 해당부서에 근무하는 사람이 존재하지 않는 경우의 결과를 출력하라.
+
+   해답) SELECT 
+    d.deptno, 
+    d.dname, 
+    e.ename 
+FROM dept d 
+LEFT JOIN emp e ON d.deptno = e.deptno 
+WHERE e.empno IS NULL;
+
+
+
+5. 문제) ‘ALLEN’의 직무와 같은 사람의 이름, 부서명, 급여, 직무를 출력하라.
+
+   해답)  SELECT 
+    e.ename, 
+    d.dname, 
+    e.sal, 
+    e.job 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.job = (SELECT job FROM emp WHERE ename = 'ALLEN');
+
+
+
+
+6. 문제) ‘JONES’가 속해있는 부서의 모든 사람의 사원번호, 이름, 입사일, 급여를 출력하라.
+
+   해답) SELECT 
+    e.empno, 
+    e.ename, 
+    e.hiredate, 
+    e.sal 
+FROM emp e 
+WHERE e.deptno = (SELECT deptno FROM emp WHERE ename = 'JONES');
+
+
+
+
+7. 문제) 전체 사원의 평균 임금보다 많은 사원의 사원번호, 이름, 부서명, 입사일, 지역, 급여를 출력하라.
+
+   해답) SELECT 
+    e.empno, 
+    e.ename, 
+    d.dname, 
+    e.hiredate, 
+    d.loc AS 지역, 
+    e.sal 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.sal > (SELECT AVG(sal) FROM emp);
+
+
+
+
+8. 문제) 10번 부서 사람들 중에서 20번 부서의 사원과 같은 업무를 하는 사원의 사원번호, 이름, 부서명, 입사일, 지역을 출력하라.
+
+   해답) SELECT 
+    e.empno, 
+    e.ename, 
+    d.dname, 
+    e.hiredate, 
+    d.loc 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.deptno = 10 
+AND e.job IN (SELECT job FROM emp WHERE deptno = 20);
+
+
+
+
+9. 문제) 10번 부서 중에서 30번 부서에는 없는 업무를 하는 사원의 사원번호, 이름, 부서명, 입사일, 지역을 출력하라.
+
+   해답) SELECT 
+    e.empno, 
+    e.ename, 
+    d.dname, 
+    e.hiredate, 
+    d.loc 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.deptno = 10 
+AND e.job NOT IN (SELECT job FROM emp WHERE deptno = 30);
+
+
+
+
+
+
+10. 문제) 10번 부서와 같은 일을 하는 사원의 사원번호, 이름, 부서명, 지역, 급여를 급여가 많은 순으로 출력하라.
+
+    해답) SELECT 
+    e.empno, 
+    e.ename, 
+    d.dname, 
+    d.loc, 
+    e.sal 
+FROM emp e 
+JOIN dept d ON e.deptno = d.deptno 
+WHERE e.job IN (SELECT job FROM emp WHERE deptno = 10) 
+ORDER BY e.sal DESC;
+
+
+
+
+
+11. 문제) ‘MARTIN’이나 ‘SCOTT의 급여와 같은 사원의 사원번호, 이름, 급여를 출력하라.
+
+    해답) 
+SELECT 
+    e.empno, 
+    e.ename, 
+    e.sal 
+FROM emp e 
+WHERE e.sal IN (SELECT sal FROM emp WHERE ename IN ('MARTIN', 'SCOTT'));
+
+
+
+
+12. 문제) 급여가 30번 부서의 최고 급여보다 높은 사원의 사원번호, 이름, 급여를 출력하라.
+
+
+    해답)  
+SELECT 
+    e.empno, 
+    e.ename, 
+    e.sal 
+FROM emp e 
+WHERE e.sal > (SELECT MAX(sal) FROM emp WHERE deptno = 30);
+
+
+
+
+13. 문제) 급여가 30번 부서의 최저 급여보다 높은 사원의 사원번호, 이름, 급여를 출력하라.
+
+    해답)  
+
+SELECT 
+    e.empno, 
+    e.ename, 
+    e.sal 
+FROM emp e 
+WHERE e.sal > (SELECT MIN(sal) FROM emp WHERE deptno = 30);
+
+

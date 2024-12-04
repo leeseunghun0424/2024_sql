@@ -1,0 +1,38 @@
+20240924
+
+select empno,ename,sal,
+case when sal between '01' and '1000' then 'level1'
+when sal between '1001' and '2000' then 'level2'
+when sal between '2001' and '3000' then 'level3'
+when sal between '3001' and '4000' then 'level4'
+when sal between '4001' and '5000' then 'level5'
+END"LEVEL"
+from emp;
+
+
+
+SELECT name, jumin, 
+CASE(SUBSTR(jumin,7,1))
+WHEN '1' THEN 'MAN'
+WHEN  '2' THEN 'WOMAN'
+END "gender"
+FROM student;
+
+
+select deptno,job,avg(nvl(sal,0))"AVG_SAL"
+from emp
+group by deptno,job;
+
+
+
+select deptno,avg(nvl(sal,0)) 
+from emp
+where deptno > 10
+group by deptno
+having avg(nvl(sal,0)) >= 2000;
+
+select deptno,job,avg(nvl(sal,0)) 
+from emp
+group by deptno,job
+having job != 'PRESIDENT';
+

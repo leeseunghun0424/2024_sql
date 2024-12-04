@@ -1,0 +1,153 @@
+연습문제 1번
+
+ CREATE OR REPLACE VIEW v_prof_dept2
+ AS
+SELECT p.profno , p.name, p.position,d.dname
+FROM professor p , department d
+WHERE p.deptno = d.deptno;
+
+
+
+SQL>  CREATE OR REPLACE VIEW v_prof_dept2
+  2   AS
+  3  SELECT p.profno , p.name, p.position,d.dname
+  4  FROM professor p , department d
+  5  WHERE p.deptno = d.deptno;
+
+뷰가 생성되었습니다.
+
+SQL> select * from v_prof_dept2;
+
+    PROFNO NAME                 POSITION             DNAME
+---------- -------------------- -------------------- --------------------------------------------------------------------------------
+      1001 조인형               정교수               컴퓨터공학과
+      1002 박승곤               조교수               컴퓨터공학과
+      2002 김영조               조교수               멀티미디어공학과
+      2003 주승재               정교수               멀티미디어공학과
+      3001 김도형               정교수               소프트웨어공학과
+      3002 나한열               조교수               소프트웨어공학과
+      4001 심슨                 정교수               전자공학과
+      4002 최슬기               조교수               전자공학과
+      4003 박원범               조교수               기계공학과
+      4005 바비                 정교수               화학공학과
+      4007 허은                 조교수               문헌정보학과
+
+11 행이 선택되었습니다.
+
+연습문제 2번
+
+SELECT d.dname,s.max_height,s.max_weight
+FROM (select deptno1,max(height) max_height, max(weight) max_weight
+FROM student
+group by deptno1) s, department d
+where d.deptno = s.deptno1;
+
+
+
+ SELECT d.dname,s.max_height,s.max_weight
+  2  FROM (select deptno1,max(height) max_height, max(weight) max_weight
+  3  FROM student
+  4  group by deptno1) s, department d
+  5  where d.deptno = s.deptno1;
+
+DNAME                                                                            MAX_HEIGHT MAX_WEIGHT
+-------------------------------------------------------------------------------- ---------- ----------
+컴퓨터공학과                                                                            182         72
+멀티미디어공학과                                                                        179         81
+소프트웨어공학과                                                                        168         52
+전자공학과                                                                              177         83
+기계공학과                                                                              182         70
+문헌정보학과                                                                            184         62
+
+6 행이 선택되었습니다.
+
+
+
+연습문제 3번
+SQL> WITH max_height AS (SELECT deptno1, studno, grade, name, height
+  2  FROM student
+  3  WHERE (deptno1, height) IN (
+  4  SELECT deptno1, MAX(height)
+  5  FROM student
+  6  GROUP BY deptno1))
+  7  SELECT studno, grade, name, height, dname
+  8  FROM max_height m
+  9  JOIN department ON (deptno1 = deptno);
+
+    STUDNO      GRADE NAME                     HEIGHT DNAME
+---------- ---------- -------------------- ---------- --------------------------------------------------------------------------------
+      9611          2 일지매                      182 컴퓨터공학과
+      9714          1 김주현                      179 멀티미디어공학과
+      9413          4 이미경                      168 소프트웨어공학과
+      9414          4 김재수                      177 전자공학과
+      9415          4 박동호                      182 기계공학과
+      9615          2 노정호                      184 문헌정보학과
+
+6 행이 선택되었습니다.
+
+
+연습문제4번
+SELECT s.grade AS 학년, s.name AS 이름, s.height AS 키, avg_height.avg_height AS 평균키
+FROM student s
+JOIN (
+    SELECT grade, ROUND(AVG(height), 1) AS avg_height
+    FROM student
+    WHERE SUBSTR(jumin, 7, 1) IN ('1', '3') 
+    GROUP BY grade
+) avg_height ON s.grade = avg_height.grade
+WHERE SUBSTR(s.jumin, 7, 1) IN ('1', '3') 
+  AND s.height > avg_height.avg_height
+ORDER BY s.grade, s.height DESC;
+
+
+SQL> SELECT s.grade AS 학년, s.name AS 이름, s.height AS 키, avg_height.avg_height AS 평균키
+  2  FROM student s
+  3  JOIN (
+  4      SELECT grade, ROUND(AVG(height), 1) AS avg_height
+  5      FROM student
+  6      WHERE SUBSTR(jumin, 7, 1) IN ('1', '3')
+  7      GROUP BY grade
+  8  ) avg_height ON s.grade = avg_height.grade
+  9  WHERE SUBSTR(s.jumin, 7, 1) IN ('1', '3')
+ 10    AND s.height > avg_height.avg_height
+ 11  ORDER BY s.grade, s.height DESC;
+
+      학년 이름                         키     평균키
+---------- -------------------- ---------- ----------
+         1 김주현                      179      175.7
+         2 노정호                      184      175.6
+         2 일지매                      182      175.6
+         4 박동호                      182      177.8
+         4 서진수                      180      177.8
+
+
+연습문제5번
+
+SELECT RANK, name, pay
+FROM (
+    SELECT RANK() OVER (ORDER BY pay DESC) AS RANK,
+           name,
+           pay
+    FROM professor
+) subquery
+WHERE RANK <= 5
+ORDER BY RANK;
+
+
+SELECT RANK, name, pay
+  2  FROM (
+  3      SELECT RANK() OVER (ORDER BY pay DESC) AS RANK,
+  4             name,
+  5             pay
+  6      FROM professor
+  7  ) subquery
+  8  WHERE RANK <= 5
+  9  ORDER BY RANK;
+
+      RANK NAME                        PAY
+---------- -------------------- ----------
+         1 심슨                        570
+         2 조인형                      550
+         3 김도형                      530
+         4 바비                        500
+         5 주승재                      490

@@ -1,0 +1,133 @@
+1. 1학년을 제외한 학생들과 학생의 지도교수명을 조회하는 view를 생성하시오 view의 이름은 v_stud_prof이다
+
+학번,이름,학년,지도교수명,학과명
+
+CREATE OR REPLACE VIEW v_stud_prof
+ AS
+SELECT 
+   s.studno,s.name,s.grade,d.dname,p.name AS 지도교수명
+FROM
+   student s
+JOIN
+   professor p ON s.profno = p.profno
+JOIN 
+   department d ON s.deptno1 = d.deptno
+WHERE 
+   p.profno = s.profno and s.deptno1 = d.deptno and grade != 1;
+
+
+
+ CREATE OR REPLACE VIEW v_stud_prof
+  2   AS
+  3  SELECT s.studno,s.name,s.grade,d.dname,p.name AS 지도교수명
+  4  FROM student s
+  5  JOIN professor p ON s.profno = p.profno
+  6  JOIN department d ON s.deptno1 = d.deptno
+  7  WHERE p.profno = s.profno and s.deptno1 = d.deptno and grade != 1;
+
+뷰가 생성되었습니다.
+
+SQL> select * from v_stud_prof;
+
+    STUDNO NAME                      GRADE DNAME                                                                            지도교수명
+---------- -------------------- ---------- -------------------------------------------------------------------------------- --------------------
+      9411 서진수                        4 컴퓨터공학과                                                                     조인형
+      9611 일지매                        2 컴퓨터공학과                                                                     박승곤
+      9511 김신영                        3 컴퓨터공학과                                                                     박승곤
+      9412 서재수                        4 멀티미디어공학과                                                                 양선희
+      9612 김진욱                        2 멀티미디어공학과                                                                 양선희
+      9512 신은경                        3 멀티미디어공학과                                                                 김영조
+      9413 이미경                        4 소프트웨어공학과                                                                 나한열
+      9414 김재수                        4 전자공학과                                                                       심슨
+      9515 임세현                        3 전자공학과                                                                       심슨
+      9613 안광훈                        2 전자공학과                                                                       최슬기
+      9614 김문호                        2 전자공학과                                                                       박원범
+
+    STUDNO NAME                      GRADE DNAME                                                                            지도교수명
+---------- -------------------- ---------- -------------------------------------------------------------------------------- --------------------
+      9415 박동호                        4 기계공학과                                                                       박원범
+      9513 오나라                        3 기계공학과                                                                       박원범
+      9615 노정호                        2 문헌정보학과                                                                     허은
+      9514 구유미                        3 문헌정보학과                                                                     허은
+
+15 행이 선택되었습니다.
+
+
+
+2.직급 별로 직급별 평균연봉보다 적게받는 교수를 출력하라
+연봉은 월급(pay)*12 + 보너스 (bonus) * 6 출력은 10000을 곱해서 하시오
+
+직급,교수번호,교수명,입사일,연봉을 출력하라
+
+SELECT
+   p.position AS 직급,p.profno AS 교수번호,p.name,p.hiredate AS 입사일 , (p.pay* 12 + NVL(p.bonus, 0) *6) * 10000 AS 연봉 
+FROM 
+    professor p
+JOIN (
+	SELECT position,ROUND(AVG(pay*12 + NVL(bonus, 0) *6) * 10000) AS 	avg_pay
+	FROM professor
+	GROUP BY position) avg_pay ON p.position = avg_pay.position
+WHERE  
+   (pay*12 + NVL(bonus, 0) *6) * 10000 < avg_pay.avg_pay;
+
+
+
+ SELECT
+  2     p.position AS 직급,p.profno AS 교수번호,p.name,p.hiredate AS 입사일 , (p.pay*12 + NVL(p.bonus, 0) *6) * 10000 AS 연봉
+  3  FROM
+  4      professor p
+  5  JOIN (
+  6  SELECT position,ROUND(AVG(pay*12 + NVL(bonus, 0) *6) * 10000) AS avg_pay
+  7  FROM professor
+  8  GROUP BY position) avg_pay ON p.position = avg_pay.position
+  9  WHERE  (pay*12 + NVL(bonus, 0) *6) * 10000 < avg_pay.avg_pay;
+
+직급                                       교수번호 NAME                 입사일         연봉
+---------------------------------------- ---------- -------------------- -------- ----------
+조교수                                         4002 최슬기               09/08/30   39600000
+조교수                                         4003 박원범               99/12/01   40200000
+조교수                                         4007 허은                 01/05/23   36600000
+전임강사                                       2001 양선희               01/09/01   30000000
+전임강사                                       4006 전민                 10/06/28   26400000
+정교수                                         2003 주승재               82/04/29   64200000
+정교수                                         4005 바비                 85/09/18   64800000
+
+7 행이 선택되었습니다.
+
+3.사원들의 근무지는 '포항본사' , 서울지사 등이 있다 근무지별로 사원수를 출력하시오. 
+
+근무지역 인원수를 출력하라
+
+
+SELECT d.area , count(e.deptno) AS 인원수
+FROM
+   emp2 e
+JOIN
+   dept2 d
+ON d.dcode = e.deptno
+WHERE 
+   d.dcode = e.deptno
+GROUP BY 
+   d.area;
+
+ SELECT d.area , count(e.deptno) AS 인원수
+  2  FROM
+  3     emp2 e
+  4  JOIN
+  5     dept2 d
+  6  ON d.dcode = e.deptno
+  7  WHERE
+  8     d.dcode = e.deptno
+  9  GROUP BY
+ 10     d.area;
+
+AREA                                         인원수
+---------------------------------------- ----------
+포항본사                                          4
+경기지사                                          4
+서울지사                                          6
+대전지사                                          2
+부산지사                                          2
+울산지사                                          2
+
+6 행이 선택되었습니다.

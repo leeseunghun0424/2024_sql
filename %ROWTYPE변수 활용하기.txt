@@ -1,0 +1,113 @@
+SET SERVEROUTPUT ON;
+
+#TYPE 변수를 사용하여 데이터 조회하기
+
+DECLARE
+vno dept.deptno%type;
+vname dept.dname%type;
+vloc dept.loc%type;
+
+BEGIN
+	SELECT deptno,dname,loc INTO vno, vname,vloc
+	FROM dept
+	WHERE deptno=10;
+
+DBMS_OUTPUT.PUT_LINE(vno|| ' / '||vname||' / '||vloc);
+
+END;
+/
+
+# %ROWTYPE 변수를 활용해서 데이터 출력하기 
+*1번예처럼 TYPE변수를 활용하면 3개의 변수를 사용해서 처리해야하지만 %ROWTYPE 변수를 쓸 경우에는 위 예의 2번라인처럼 1개의 변수로도 처리가 가능하다.
+
+DECLARE
+	v_row dept%ROWTYPE;
+BEGIN
+	SELECT * INTO v_row
+	FROM dept
+	WHERE deptno=10;
+DBMS_OUTPUT.PUT_LINE(v_row.deptno ||' / '||v_row.dname|| ' / '||v_row.loc);
+END;
+/
+
+
+# 데이터 입력
+
+CREATE TABLE t_rowtype1
+( no NUMBER,
+  name VARCHAR2(10),
+  hiredate DATE);
+
+
+CREATE TABLE t_rowtype2
+AS SELECT * FROM t_rowtype1;
+
+INSERT INTO t_rowtype1 VALUES (10,'APPLE' , SYSDATE);
+INSERT INTO t_rowtype1 VALUES (20,'BANANA',SYSDATE);
+INSERT INTO t_rowtype1 VALUES (30,'BERRY',SYSDATE);
+COMMIT;
+
+SELECT* FROM t_rowtype1;
+
+
+        NO NAME                 HIREDATE
+---------- -------------------- --------
+        10 APPLE                24/11/21
+        20 BANANA               24/11/21
+        30 BERRY                24/11/21
+
+
+#rowtype2 테이블에 입력하기
+
+DECLARE
+	v_record t_rowtype1%ROWTYPE;
+BEGIN
+	SELECT * INTO v_record
+	FROM t_rowtype1
+	WHERE no=10;
+INSERT INTO t_rowtype2 VALUES v_record;
+END;
+/
+
+SELECT * FROM t_rowtype2;
+
+        NO NAME                 HIREDATE
+---------- -------------------- --------
+        10 APPLE                24/11/21
+
+
+
+#ROWTYPE 변수를 활용해서 데이터 변경하기
+
+DECLARE 
+	v_record t_rowtype1%ROWTYPE;
+BEGIN
+	SELECT * INTO v_record
+	FROM t_rowtype1
+	WHERE no=10;
+
+v_record.name := 'ORANGE';
+
+UPDATE t_rowtype2
+SET row=v_record
+WHERE no=10;
+END;
+/
+
+SELECT * FROM t_rowtype2;
+
+        NO NAME                 HIREDATE
+---------- -------------------- --------
+        10 ORANGE               24/11/21
+
+
+DECLARE
+	v_name t_rowtype2.name%TYPE;
+BEGIN
+	v_name := 'ORANGE';
+	UPDATE t_rowtype2
+	SET name=v_name
+	WHERE no=10;
+END;
+/
+

@@ -1,0 +1,80 @@
+
+
+SET SERVEROUTPUT ON;
+
+CREATE OR REPLACE PROCEDURE update_job(
+    vdeptno emp.deptno%TYPE,
+    vjob emp.job%TYPE
+)
+IS
+BEGIN
+    UPDATE emp
+    SET job = vjob
+    WHERE deptno = vdeptno;
+END;
+/
+
+EXEC update_job(10,'MANAGER');
+SELECT deptno,job FROM emp;
+
+--------------------------------------------------------------------------------
+CREATE OR REPLACE PROCEDURE new_sal(
+    vempno emp.empno%TYPE
+)
+IS
+BEGIN
+    UPDATE emp
+    SET sal = 2000
+    WHERE empno = vempno;
+
+
+    IF SQL%NOTFOUND THEN
+        DBMS_OUTPUT.PUT_LINE('값이 존재하지 않습니다.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('급여가 업데이트되었습니다.');
+    END IF;
+END;
+/
+
+EXEC new_sal(9000);
+
+값이 존재하지 않습니다.
+
+EXEC new_sal(7900);
+급여가 업데이트되었습니다.
+SELECT empno,ename,sal FROM emp WHERE empno=7900;
+
+     EMPNO ENAME                       SAL
+---------- -------------------- ----------
+      7900 JAMES                      2000
+
+-------------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE ename_sal(
+    vempno_param emp.empno%TYPE
+)
+IS
+    vename  emp.ename%TYPE;
+    vsal    emp.sal%TYPE;
+    vcomm   emp.comm%TYPE;
+    vtotal  NUMBER;
+BEGIN
+    SELECT ename, sal, NVL(comm, 0), sal + NVL(comm, 0)
+    INTO vename, vsal, vcomm, vtotal
+    FROM emp
+    WHERE empno = vempno_param;
+    DBMS_OUTPUT.PUT_LINE('NAME IS: ' || vename);
+    DBMS_OUTPUT.PUT_LINE('SAL IS: ' || vsal);
+    DBMS_OUTPUT.PUT_LINE('COMM IS: ' || vcomm);
+    DBMS_OUTPUT.PUT_LINE('TOTAL IS: ' || vtotal);
+END;
+/
+
+EXEC ename_sal(7902);
+NAME IS: FORD
+SAL IS: 3000
+COMM IS: 0
+TOTAL IS: 3000
+
+
+

@@ -1,0 +1,18 @@
+10.08 과제
+
+SELECT s.name, s.weight
+FROM student s
+WHERE s.weight > (SELECT AVG(s2.weight)
+    FROM student s2
+    WHERE s2.deptno1 = 201);
+
+SELECT studno,s.name,grade,p.name,dname
+FROM student s LEFT OUTER JOIN professor p USING(profno)
+	JOIN department d ON (deptno1 = d.deptno)
+WHERE part = (SELECT deptno FROM department WHERE dname = '컴퓨터정보학부')
+ORDER BY dname,grade;
+
+select e1.empno,e1.ename,e1.hiredate,count(e2.hiredate)count 
+from emp e1 LEFT OUTER JOIN emp e2 ON (e1.hiredate > e2.hiredate)
+group by e1.empno,e1.ename,e1.hiredate
+order by count;

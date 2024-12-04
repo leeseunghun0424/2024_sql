@@ -1,0 +1,133 @@
+case 1 VIew를 통하여 DML작업 수행하기
+
+SQL> CREATE TABLE o_table
+  2  (a NUMBER, b NUMBER);
+
+테이블이 생성되었습니다.
+
+SQL> CREATE VIEW view1
+  2  AS
+  3     SELECT a,b
+  4     FROM o_table;
+
+뷰가 생성되었습니다.
+
+SQL> INSERT INTO view1 VALUES (1,2);
+
+1 개의 행이 만들어졌습니다.
+
+SQL> SELECT * FROM view1;
+
+         A          B
+---------- ----------
+         1          2
+
+SQL>    SELECT * FROM o_table;
+
+         A          B
+---------- ----------
+         1          2
+
+SQL> ROLLBACK;
+
+롤백이 완료되었습니다.
+
+SQL>    SELECT * FROM view1;
+
+선택된 레코드가 없습니다.
+
+case 2 with read only 테스트하기
+
+SQL> CREATE VIEW view2
+  2  AS
+  3  SELECT a,b
+  4  FROM o_table
+  5  WITH READ ONLY;
+
+뷰가 생성되었습니다.
+
+SQL> SELECT * FROM view2;
+
+선택된 레코드가 없습니다.
+
+SQL> INSERT INTO view2 VALUES (3,4);
+INSERT INTO view2 VALUES (3,4)
+*
+1행에 오류:
+ORA-42399: 읽기 전용 뷰에서는 DML 작업을 수행할 수 없습니다.
+
+
+SQL> INSERT INTO view1 VALUES(3,4);
+
+1 개의 행이 만들어졌습니다.
+
+SQL> SELECT * FROM view2;
+
+         A          B
+---------- ----------
+         3          4
+
+SQL> SELECT * FROM o_table;
+
+         A          B
+---------- ----------
+         3          4
+
+case 3 with check option 
+
+INSERT INTO view1 VALUES(5,6);
+
+1 개의 행이 만들어졌습니다.
+
+SQL> SELECT * FROM view1;
+
+         A          B
+---------- ----------
+         3          4
+         5          6
+
+
+SQL> CREATE VIEW view3
+  2  AS
+  3  SELECT a,b
+  4  FROM o_table
+  5  WHERE a=3
+  6  WITH CHECK OPTION;
+
+뷰가 생성되었습니다.
+
+SQL> SELECT * FROM view3;
+
+         A          B
+---------- ----------
+         3          4
+
+SQL> UPDATE view3
+  2  SET a=5
+  3  WHERE b=4;
+UPDATE view3
+       *
+1행에 오류:
+ORA-01402: 뷰의 WITH CHECK OPTION의 조건에 위배 됩니다
+
+
+SQL> UPDATE view3
+  2  SET B=6
+  3  WHERE a=3;
+
+1 행이 업데이트되었습니다.
+
+SQL> SELECT * FROM view3;
+
+         A          B
+---------- ----------
+         3          6
+
+SQL> delete  from view3
+  2  where a=3;
+
+1 행이 삭제되었습니다.
+
+SQL> SELECT * FROM view3;
+
+선택된 레코드가 없습니다.

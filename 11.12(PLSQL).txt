@@ -1,0 +1,173 @@
+CREATE TABLE t_plsql
+(no NUMBER,
+name VARCHAR2(10),
+tel NUMBER);
+
+BEGIN 
+INSERT INTO t_plsql VALUES (1,'AAA',1111);
+END;
+
+
+
+
+SQL> CREATE TABLE t_plsql
+  2  (no NUMBER,
+  3  name VARCHAR2(10),
+  4  tel NUMBER);
+
+테이블이 생성되었습니다.
+
+
+------------------------기본적인 INSERT 수행하기 ---------------------------
+BEGIN
+INSERT INTO t_plsql VALUES (1,'AAA',1111);
+END;
+ /
+
+PL/SQL 처리가 정상적으로 완료되었습니다.
+
+SQL> SELECT * FROM t_plsql;
+
+        NO NAME                        TEL
+---------- -------------------- ----------
+         1 AAA                        1111
+
+SQL> COMMIT;
+
+커밋이 완료되었습니다.
+
+-----------------------------INSERT 수행하기 2-------------------------------
+SET VERIFY OFF
+DECLARE
+v_no NUMBER := &no ;
+v_name VARCHAR2(10) := '&name' ;
+v_tel NUMBER := &tel ;
+
+BEGIN
+INSERT INTO t_plsql VALUES(v_no,v_name,v_tel);
+END;
+/
+
+no의 값을 입력하십시오: 2
+name의 값을 입력하십시오: BBB
+tel의 값을 입력하십시오: 2222
+
+PL/SQL 처리가 정상적으로 완료되었습니다.
+
+--------------------------------UPDATE----------------------------------
+BEGIN 
+UPDATE t_plsql
+SET name = 'CCC'
+WHERE no = 2;
+END;
+/
+
+PL/SQL 처리가 정상적으로 완료되었습니다.
+
+SQL> SELECT * FROM T_PLSQL;
+
+        NO NAME                        TEL
+---------- -------------------- ----------
+         1 AAA                        1111
+         2 CCC                        2222
+
+SQL> COMMIT;
+
+커밋이 완료되었습니다.
+
+
+--------------------------DELETE 수행하기----------------------------------
+
+BEGIN
+DELETE FROM t_plsql
+WHERE no = 1;
+END;
+/
+
+
+PL/SQL 처리가 정상적으로 완료되었습니다.
+
+SQL> SELECT * FROM t_plsql;
+
+        NO NAME                        TEL
+---------- -------------------- ----------
+         2 CCC                        2222
+
+SQL> COMMIT;
+
+커밋이 완료되었습니다.
+
+---------------------- 3,4 INSERT 하기 -------------------------------
+
+
+CREATE OR REPLACE PROCEDURE insert_emp
+( v_no t_plsql.no%TYPE,
+	v_name t_plsql.name%TYPE,
+	v_tel t_plsql.tel%TYPE )
+IS
+BEGIN
+	INSERT INTO t_plsql VALUES(v_no, v_name, v_tel);
+END;
+/
+
+프로시저가 생성되었습니다.
+
+exec insert_emp(3,'CCC', 3333);
+exec insert_emp(4,'DDD', 4444);
+
+----------------------UPDATE,DELETE 하기------------------------------
+CREATE OR REPLACE PROCEDURE update_emp
+( v_no t_plsql.no%TYPE,
+v_name t_plsql.name%TYPE)
+IS
+BEGIN
+	UPDATE t_plsql
+	SET name = v_name
+	WHERE no = v_no;
+END;
+/
+
+프로시저가 생성되었습니다.
+
+exec update_emp(3,'DDD');
+
+
+
+CREATE OR REPLACE PROCEDURE delete_emp
+( v_no t_plsql.no%TYPE)
+IS
+BEGIN
+	DELETE FROM t_plsql
+	WHERE no = v_no;
+END;
+/
+
+exec delete_emp(3);
+
+SQL> select * from t_plsql;
+
+        NO NAME                        TEL
+---------- -------------------- ----------
+         4 DDDD                       4444
+         2 CCC                        2222
+
+------------------------프로시저로 SELECT 하기 ---------------------------------
+ SET SERVEROUTPUT ON;
+
+DECLARE
+  v_no t_plsql.no%TYPE;
+  v_name t_plsql.name%TYPE;
+  v_tel t_plsql.tel%TYPE;
+BEGIN
+  SELECT no, name, tel INTO v_no, v_name, v_tel
+  FROM t_plsql
+  WHERE no =&no;
+  DBMS_OUTPUT.PUT_LINE(v_no || ' - THIS Member''s name is ' || v_name || ' - THIS Memeber''s tel is ' || v_tel);
+EXCEPTION
+WHEN NO_DATA_FOUND THEN
+DBMS_OUTPUT.PUT_LINE('NO Member!');
+WHEN TOO_MANY_ROWS THEN
+DBMS_OUTPUT.PUT_LINE('More Then 2 Member!');
+END;
+/
+

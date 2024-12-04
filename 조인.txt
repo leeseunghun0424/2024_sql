@@ -1,0 +1,40 @@
+조인
+
+select e1.empno,e1.ename,e1.job,e2.ename,e2.empno,e2.job 
+from emp e1 join emp e2 ON
+(e1.mgr = e2.empno);
+
+
+
+select p1.profno ,p1.name,p1.hiredate,count(p2.hiredate)count
+from professor p1 LEFT OUTER JOIN professor p2 ON (p1.hiredate > p2.hiredate)
+group by p1.profno , p1.name , p1.hiredate
+order by count;
+
+
+select e1.empno,e1.ename,e1.hiredate,count(e2.hiredate)count 
+from emp e1 LEFT OUTER JOIN emp e2 ON (e1.hiredate > e2.hiredate)
+group by e1.empno,e1.ename,e1.hiredate
+order by count;
+
+
+SELECT  studno,s.name,grade,p.name
+FROM student s LEFT OUTER JOIN professor p USING(profno)
+WHERE deptno1 = (SELECT deptno FROM department WHERE dname ='컴퓨터공학과');
+
+
+SELECT studno,s.name,grade,p.name,dname
+FROM student s LEFT OUTER JOIN professor p USING(profno)
+	JOIN department d ON (deptno1 = d.deptno)
+WHERE part = (SELECT deptno FROM department WHERE dname = '컴퓨터정보학부')
+ORDER BY dname,grade;
+
+
+SELECT s.name, s.weight
+FROM student s
+WHERE s.weight > (
+    SELECT AVG(s2.weight)
+    FROM student s2
+    WHERE s2.deptno1 = 201);
+
+

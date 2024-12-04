@@ -1,0 +1,21 @@
+emp2 테이블을 사용하여 전체직원 중 Section head 직급의 최소 연봉자보다 연봉이 높은 사람의 이름과 직급,연봉을 출력하세요 단,연봉출력 형식은 아래와 같이 천단위 구분 기호와 \표시를 하세요. (L 로칼 기호를 사용하면 됨)
+
+
+SELECT name, position, to_char(pay, 'L999,999,999') as pay
+FROM emp2
+WHERE pay > (SELECT MIN(pay) FROM emp2 WHERE position = '과장')
+
+// ORDER BY pay desc;
+
+
+Student 테이블을 조회하여 전체 학생 중에서 체중이 2학년 학생들의 체중에서 가장 적게 나가는 학생보다 몸무게가 적은 학생의 이름과 학년과 몸무게를 출력하세요
+
+SELECT name,grade,weight FROM student WHERE weight < (SELECT min(weight) FROM student WHERE grade = 2);
+
+Emp2 테이블과 dept2 테이블을 조합하여 각 부서별 평균 연봉을 구하고 그중에서 평균 연봉이 가장 적은 부서의 평균 연봉보다 적게 받는 직원들의 부서명 직원명 연봉을 출력하세요
+
+
+SELECT d.dname, e.name, e.pay 
+FROM emp2 e JOIN dept2 d ON e.deptno = d.dcode
+WHERE e.pay < (SELECT MIN(avg_pay)
+                      FROM ( SELECT AVG(pay) avg_pay FROM emp2));

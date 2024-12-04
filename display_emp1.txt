@@ -1,0 +1,45 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+   v_empno NUMBER(5);
+   v_ename VARCHAR2(30);
+   v_sal NUMBER(6);
+    CURSOR cur1 IS
+	SELECT empno,ename,sal
+	FROM emp
+	WHERE deptno = 10;
+BEGIN
+   OPEN cur1;
+LOOP
+   FETCH cur1 INTO v_empno,v_ename,v_sal;
+   EXIT WHEN cur1%NOTFOUND;
+   DBMS_OUTPUT.PUT_LINE(v_empno || '   ' || v_ename || '    ' || v_sal);
+END LOOP;
+   CLOSE cur1;
+END;
+/
+
+
+BEGIN
+    FOR display_emp IN (
+        SELECT empno, ename, sal
+        FROM emp
+        WHERE deptno = &deptno
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(display_emp.empno || '   ' || display_emp.ename || '    ' || display_emp.sal);
+    END LOOP;
+END;
+/
+
+
+BEGIN
+   FOR display_prof IN (
+	SELECT profno,name,deptno
+	FROM professor
+	WHERE deptno =&deptno
+)LOOP
+	DBMS_OUTPUT.PUT_LINE(display_prof.profno || '번 교수님의 성함은 ' || display_prof.name|| '입니다');
+    END LOOP;
+END;
+/
+
